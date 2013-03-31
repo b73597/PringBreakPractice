@@ -3,6 +3,8 @@
 local physics = require "physics"
 physics.start()
 
+require "sprite"
+
 local storyboard = require ("storyboard")
 local scene = storyboard.newScene()
 
@@ -15,6 +17,35 @@ function scene:createScene(event)
 	local background = display.newImage("bg.png")
 	screenGroup:insert(background)
 
+	
+ceiling = display.newImage("invisibleTile.png")
+	ceiling:setReferencePoint(display.BottomLeftReferencePoint)
+	ceiling.x = 0
+	ceiling.y = 32
+	physics.addBody(ceiling, "static", {density=.1, bounce=0.1,friction=.2})
+	screenGroup:insert(ceiling)
+	
+	theFloor = display.newImage("invisibleTile.png")
+	theFloor:setReferencePoint(display.BottomLeftReferencePoint)
+	theFloor.x = 0
+	theFloor.y = 440
+	physics.addBody(theFloor, "static", {density=.1, bounce=0.1,friction=.2})
+	screenGroup:insert(theFloor)
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	city1 = display.newImage("city1.png")
 	city1:setReferencePoint(display.BottomLeftReferencePoint)
 	city1.x = 0
@@ -45,9 +76,14 @@ function scene:createScene(event)
 
 
 
-	jet = display.newImage("redJet.png")
+	jetSpriteSheet = sprite.newSpriteSheet("jet.png", 50, 17)
+	jetSprites = sprite.newSpriteSet(jetSpriteSheet, 1, 4)
+	sprite.add(jetSprites, "jets", 1, 4, 1000, 0)
+	jet = sprite.newSprite(jetSprites)
 	jet.x = 100
 	jet.y = 100
+	jet:prepare("jets")
+	jet:play()
 	physics.addBody(jet, "dynamic", {density=.1, bounce=0.1,friction=.2, radius=12})
 	screenGroup:insert(jet)
 	
@@ -59,7 +95,7 @@ function scene:createScene(event)
 	mine1.initY = mine1.y
 	mine1.amp = math.random(20,100)
 	mine1.angle = math.random(1,360)
-	physics.addBody(mine1, "static", {density=.1, bounce=0.1,friction=.2, radius=12})
+	physics.addBody(mine1, "static", {density=.2, bounce=0.1,friction=.2, radius=12})
 	screenGroup:insert(mine1)
 	
 	
