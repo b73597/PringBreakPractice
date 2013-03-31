@@ -134,6 +134,13 @@ print("touch")
 
 end
 
+function onCollision(event)
+	if event.phase == "began" then
+		storyboard.gotoScene("restart", "fade", 400)
+		print("collide!")
+	end
+end
+
 function scene:enterScene(event)
 
 	Runtime:addEventListener("touch", touchScreen)
@@ -159,6 +166,8 @@ function scene:enterScene(event)
 	mine3.enterFrame = moveMines
 	Runtime:addEventListener("enterFrame", mine3)
 	
+	Runtime:addEventListener("collision", onCollision)
+	
 	
 	
 	
@@ -167,6 +176,17 @@ function scene:enterScene(event)
 end
 
 function scene:exitScene(event)
+
+	Runtime:removeEventListener("touch", touchScreen)
+	Runtime:removeEventListener("enterFrame", city1)
+	Runtime:removeEventListener("enterFrame", city2)
+	Runtime:removeEventListener("enterFrame", city3)
+	Runtime:removeEventListener("enterFrame", city4)
+	Runtime:removeEventListener("enterFrame", mine1)
+	Runtime:removeEventListener("enterFrame", mine2)
+	Runtime:removeEventListener("enterFrame", mine3)
+	Runtime:removeEventListener("collision", onCollision)
+	
 
 end
 
