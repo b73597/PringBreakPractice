@@ -18,7 +18,7 @@ function scene:createScene(event)
 	screenGroup:insert(background)
 
 	
-ceiling = display.newImage("invisibleTile.png")
+	ceiling = display.newImage("invisibleTile.png")
 	ceiling:setReferencePoint(display.BottomLeftReferencePoint)
 	ceiling.x = 0
 	ceiling.y = 32
@@ -32,19 +32,6 @@ ceiling = display.newImage("invisibleTile.png")
 	physics.addBody(theFloor, "static", {density=.1, bounce=0.1,friction=.2})
 	screenGroup:insert(theFloor)
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	city1 = display.newImage("city1.png")
 	city1:setReferencePoint(display.BottomLeftReferencePoint)
@@ -80,12 +67,27 @@ ceiling = display.newImage("invisibleTile.png")
 	jetSprites = sprite.newSpriteSet(jetSpriteSheet, 1, 4)
 	sprite.add(jetSprites, "jets", 1, 4, 1000, 0)
 	jet = sprite.newSprite(jetSprites)
-	jet.x = 100
+	jet.x = -80
 	jet.y = 100
 	jet:prepare("jets")
 	jet:play()
-	physics.addBody(jet, "dynamic", {density=.1, bounce=0.1,friction=.2, radius=12})
+	jet.collided = false
+	physics.addBody(jet, "static", {density=.1, bounce=0.1,friction=.2, radius=12})
 	screenGroup:insert(jet)
+	jetIntro = transition.to (jet, {time=2000, x=100, onComplete=jetReady})
+	
+	
+	explosionSpriteSheet = sprite.newSpriteSheet("explosion.png", 24, 23)
+	explosionSprites = sprite.newSpriteSet(explosionSpriteSheet, 1, 8)
+	sprite.add(explosionSprites, "explosions", 1, 8, 2000, 1)
+	explosion = sprite.newSprite(explosionSprites)
+	explosion.x = 100
+	explosion.y = 100
+	explosion:prepare("explosions")
+	--explosion:play()
+	explosion.isVisible = false
+	--physics.addBody(explosion, "dynamic", {density=.1, bounce=0.1,friction=.2, radius=12})
+	screenGroup:insert(explosion)
 	
 	
 	mine1 = display.newImage("mine.png")
@@ -151,6 +153,10 @@ else
 end
 
 
+function jetReady()
+	jet.bodyType = "dynamic"
+end
+
 function activateJets(self,event)
 self:applyForce(0, -1.5, self.x, self.y)
 end
@@ -170,10 +176,30 @@ print("touch")
 
 end
 
+function gameOver ()
+	storyboard.gotoScene("restart", "fade", 400)
+end
+	
+
+function explode()
+	explosion.x = jet.x
+	explosion.y = jet.y
+	explosion.isVisible = true
+	explosion:play()
+	jet.isVisible = false
+	timer.performWithDelay(3000, gameOver, 1)
+	
+end
+
 function onCollision(event)
 	if event.phase == "began" then
-		storyboard.gotoScene("restart", "fade", 400)
-		print("collide!")
+		 if jet.collided == false then
+				jet.collided = true
+				jet.bodyType = "static"
+				explode()
+			--storyboard.gotoScene("restart", "fade", 400)
+			print("collided!")
+		end
 	end
 end
 
@@ -205,11 +231,7 @@ function scene:enterScene(event)
 	Runtime:addEventListener("collision", onCollision)
 	
 	
-	
-	
-	
-
-end
+	end
 
 function scene:exitScene(event)
 
@@ -222,7 +244,6 @@ function scene:exitScene(event)
 	Runtime:removeEventListener("enterFrame", mine2)
 	Runtime:removeEventListener("enterFrame", mine3)
 	Runtime:removeEventListener("collision", onCollision)
-	
 
 end
 
